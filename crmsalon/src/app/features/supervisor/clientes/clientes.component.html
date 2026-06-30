@@ -1,0 +1,113 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-800">Clientes</h1>
+    <p class="text-sm text-slate-500">Servicio actual e historial de cada cliente.</p>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Lista de clientes -->
+    <div class="rounded-xl bg-white shadow-sm border border-slate-100 overflow-hidden lg:col-span-1">
+      <div class="p-4 border-b border-slate-100">
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+          <input type="text" [(ngModel)]="busqueda" placeholder="Buscar cliente…"
+                 class="w-full rounded-lg border border-slate-300 pl-9 pr-3 py-2 text-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none" />
+        </div>
+      </div>
+      <ul class="divide-y divide-slate-100 max-h-[28rem] overflow-y-auto">
+        <li *ngFor="let c of clientesFiltrados">
+          <button (click)="seleccionar(c.id)"
+                  class="w-full flex items-center gap-3 px-4 py-3 text-left transition-colors"
+                  [class.bg-brand-50]="c.id === seleccionadoId"
+                  [class.hover:bg-slate-50]="c.id !== seleccionadoId">
+            <span class="inline-flex h-9 w-9 items-center justify-center rounded-full text-white text-sm font-semibold shrink-0"
+                  [style.background-color]="c.color || '#db2777'">{{ iniciales(c.nombre) }}</span>
+            <span class="min-w-0">
+              <span class="block text-sm font-medium text-slate-700 truncate">{{ c.nombre }}</span>
+              <span class="block text-xs text-slate-400 truncate">{{ c.email }}</span>
+            </span>
+          </button>
+        </li>
+        <li *ngIf="clientesFiltrados.length === 0" class="px-4 py-8 text-center text-sm text-slate-400">
+          Sin resultados.
+        </li>
+      </ul>
+    </div>
+
+    <!-- Detalle -->
+    <div class="lg:col-span-2 space-y-6" *ngIf="seleccionado as cli">
+      <!-- Header cliente -->
+      <div class="rounded-xl bg-white shadow-sm border border-slate-100 p-5 flex items-center gap-4">
+        <span class="inline-flex h-14 w-14 items-center justify-center rounded-full text-white text-lg font-semibold"
+              [style.background-color]="cli.color || '#db2777'">{{ iniciales(cli.nombre) }}</span>
+        <div class="min-w-0">
+          <h2 class="text-lg font-bold text-slate-800 truncate">{{ cli.nombre }}</h2>
+          <p class="text-sm text-slate-500 truncate">{{ cli.email }} · {{ cli.telefono }}</p>
+          <p class="text-xs text-slate-400 mt-0.5">{{ totalCitas }} cita(s) en total</p>
+        </div>
+      </div>
+
+      <!-- Servicio actual -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">Servicio actual</h3>
+        <div *ngIf="actual as a; else sinActual"
+             class="rounded-xl bg-white shadow-sm border-l-4 border-brand-500 border border-slate-100 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <span class="rounded-full px-2.5 py-1 text-xs font-medium" [ngClass]="estadoBadge[a.estado]">
+              {{ estadoLabel[a.estado] }}
+            </span>
+            <span class="text-xs text-slate-400">{{ a.fechaCreacion | date: 'dd MMM yyyy, HH:mm' }}</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            <span *ngFor="let s of a.serviciosDetalle"
+                  class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-sm text-brand-700">
+              {{ s.icono }} {{ s.nombre }}
+            </span>
+          </div>
+          <p class="text-sm text-slate-600">Estilista: <span class="font-medium">{{ a.estilista?.nombre }}</span></p>
+          <p *ngIf="a.notas" class="text-sm text-slate-500 mt-1 italic">“{{ a.notas }}”</p>
+          <p class="text-sm text-slate-700 mt-2 font-semibold">Total: ${{ a.total }}</p>
+        </div>
+        <ng-template #sinActual>
+          <div class="rounded-xl bg-slate-50 border border-dashed border-slate-200 p-5 text-center text-sm text-slate-400">
+            Sin servicio activo en este momento.
+          </div>
+        </ng-template>
+      </div>
+
+      <!-- Historial -->
+      <div>
+        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">Historial</h3>
+        <div class="space-y-3">
+          <div *ngFor="let h of historial" class="rounded-xl bg-white shadow-sm border border-slate-100 p-4">
+            <div class="flex items-center justify-between mb-2">
+              <span class="rounded-full px-2.5 py-1 text-xs font-medium" [ngClass]="estadoBadge[h.estado]">
+                {{ estadoLabel[h.estado] }}
+              </span>
+              <span class="text-xs text-slate-400">{{ h.fechaActualizacion | date: 'dd MMM yyyy' }}</span>
+            </div>
+            <div class="flex flex-wrap gap-1.5 mb-2">
+              <span *ngFor="let s of h.serviciosDetalle"
+                    class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                {{ s.icono }} {{ s.nombre }}
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <p class="text-xs text-slate-500">Estilista: {{ h.estilista?.nombre }}</p>
+              <div *ngIf="h.calificacion" class="flex items-center gap-1">
+                <app-star-rating [value]="h.calificacion.estrellas" [readonly]="true"></app-star-rating>
+              </div>
+            </div>
+            <p *ngIf="h.calificacion?.comentario" class="text-xs text-slate-500 mt-1.5 italic">
+              “{{ h.calificacion?.comentario }}”
+            </p>
+          </div>
+          <div *ngIf="historial.length === 0"
+               class="rounded-xl bg-slate-50 border border-dashed border-slate-200 p-5 text-center text-sm text-slate-400">
+            Aún no hay servicios completados.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

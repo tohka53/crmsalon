@@ -1,0 +1,96 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-800">Hola, {{ nombre }} 👋</h1>
+    <p class="text-sm text-slate-500">Estos son tus servicios en el salón.</p>
+  </div>
+
+  <div *ngIf="mensaje" class="flex items-center gap-2 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-700 border border-green-100">
+    <span>🎉</span> {{ mensaje }}
+  </div>
+
+  <!-- Servicios activos -->
+  <div>
+    <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">Servicio actual</h2>
+    <div class="space-y-3" *ngIf="activos.length; else sinActivos">
+      <div *ngFor="let c of activos" class="rounded-xl bg-white shadow-sm border-l-4 border-brand-500 border border-slate-100 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="rounded-full px-2.5 py-1 text-xs font-medium" [ngClass]="estadoBadge[c.estado]">
+            {{ estadoLabel[c.estado] }}
+          </span>
+          <span class="text-xs text-slate-400">{{ c.fechaCreacion | date: 'dd MMM yyyy, HH:mm' }}</span>
+        </div>
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <span *ngFor="let s of c.serviciosDetalle"
+                class="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2.5 py-1 text-sm text-brand-700">
+            {{ s.icono }} {{ s.nombre }}
+          </span>
+        </div>
+        <p class="text-sm text-slate-600">Atiende: <span class="font-medium">{{ c.estilista?.nombre }}</span></p>
+        <p *ngIf="c.notas" class="text-sm text-slate-500 mt-1 italic">“{{ c.notas }}”</p>
+        <p class="text-sm text-slate-700 mt-2 font-semibold">Total estimado: ${{ c.total }}</p>
+      </div>
+    </div>
+    <ng-template #sinActivos>
+      <div class="rounded-xl bg-slate-50 border border-dashed border-slate-200 p-6 text-center text-sm text-slate-400">
+        No tienes ningún servicio activo por ahora.
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Historial + calificación -->
+  <div>
+    <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-2">Historial y calificaciones</h2>
+    <div class="space-y-3">
+      <div *ngFor="let c of historial" class="rounded-xl bg-white shadow-sm border border-slate-100 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <span class="rounded-full px-2.5 py-1 text-xs font-medium" [ngClass]="estadoBadge[c.estado]">
+            {{ estadoLabel[c.estado] }}
+          </span>
+          <span class="text-xs text-slate-400">{{ c.fechaActualizacion | date: 'dd MMM yyyy' }}</span>
+        </div>
+
+        <div class="flex flex-wrap gap-1.5 mb-3">
+          <span *ngFor="let s of c.serviciosDetalle"
+                class="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-sm text-slate-600">
+            {{ s.icono }} {{ s.nombre }}
+          </span>
+        </div>
+        <p class="text-sm text-slate-600 mb-3">Atendió: <span class="font-medium">{{ c.estilista?.nombre }}</span></p>
+
+        <!-- Ya calificado -->
+        <div *ngIf="c.calificacion" class="rounded-lg bg-amber-50 border border-amber-100 p-3">
+          <div class="flex items-center gap-2">
+            <app-star-rating [value]="c.calificacion.estrellas" [readonly]="true" size="lg"></app-star-rating>
+            <span class="text-sm font-medium text-amber-800">Tu calificación</span>
+          </div>
+          <p *ngIf="c.calificacion.comentario" class="text-sm text-slate-600 mt-1.5 italic">“{{ c.calificacion.comentario }}”</p>
+        </div>
+
+        <!-- Pendiente de calificar -->
+        <div *ngIf="!c.calificacion && c.estado === 'completado'" class="rounded-lg bg-slate-50 border border-slate-200 p-4">
+          <p class="text-sm font-medium text-slate-700 mb-2">¿Cómo estuvo tu servicio?</p>
+          <app-star-rating
+            [value]="ratingDraft[c.id] || 0"
+            (valueChange)="setRating(c.id, $event)"
+            size="lg"
+          ></app-star-rating>
+          <textarea [(ngModel)]="comentarioDraft[c.id]" rows="2" placeholder="Deja un comentario (opcional)…"
+                    class="mt-3 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-2 focus:ring-brand-200 outline-none"></textarea>
+          <div class="flex justify-end mt-2">
+            <button (click)="calificar(c)" [disabled]="!(ratingDraft[c.id] > 0)"
+                    class="rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
+                    [class.bg-brand-600]="ratingDraft[c.id] > 0" [class.hover:bg-brand-700]="ratingDraft[c.id] > 0"
+                    [class.bg-slate-300]="!(ratingDraft[c.id] > 0)" [class.cursor-not-allowed]="!(ratingDraft[c.id] > 0)">
+              Enviar calificación
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="historial.length === 0"
+           class="rounded-xl bg-slate-50 border border-dashed border-slate-200 p-6 text-center text-sm text-slate-400">
+        Todavía no tienes servicios completados.
+      </div>
+    </div>
+  </div>
+</div>
