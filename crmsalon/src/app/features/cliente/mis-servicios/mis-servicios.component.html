@@ -27,7 +27,7 @@
         </div>
         <p class="text-sm text-slate-600">Atiende: <span class="font-medium">{{ c.estilista?.nombre }}</span></p>
         <p *ngIf="c.notas" class="text-sm text-slate-500 mt-1 italic">“{{ c.notas }}”</p>
-        <p class="text-sm text-slate-700 mt-2 font-semibold">Total estimado: ${{ c.total }}</p>
+        <p class="text-sm text-slate-700 mt-2 font-semibold">Total estimado: Q{{ c.total }}</p>
       </div>
     </div>
     <ng-template #sinActivos>

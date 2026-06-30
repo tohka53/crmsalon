@@ -19,7 +19,13 @@ import { SeedService } from './core/services/seed.service';
   imports: [BrowserModule, AppRoutingModule, FormsModule, SharedModule],
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideAppInitializer(() => inject(SeedService).ensureSeed()),
+    provideAppInitializer(() => {
+      try {
+        inject(SeedService).ensureSeed();
+      } catch {
+        // el arranque nunca debe fallar por el seeding
+      }
+    }),
   ],
   bootstrap: [App],
 })

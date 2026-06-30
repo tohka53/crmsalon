@@ -8,8 +8,12 @@ export class SeedService {
   constructor(private storage: StorageService) {}
 
   ensureSeed(): void {
-    if (this.storage.get('seeded', false)) return;
-    this.reset();
+    try {
+      if (this.storage.get('seeded', false)) return;
+      this.reset();
+    } catch {
+      // nunca bloquear el arranque de la app por un fallo de seeding
+    }
   }
 
   /** Reinicia toda la data a los valores demo. */

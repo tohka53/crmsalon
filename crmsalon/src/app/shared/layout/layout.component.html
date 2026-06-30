@@ -7,9 +7,9 @@
             <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600 text-white text-lg">💇‍♀️</span>
             <span class="font-bold text-lg text-slate-800">CRM <span class="text-brand-600">Salón</span></span>
           </a>
-          <div class="hidden md:flex items-center gap-1" *ngIf="user$ | async as user">
+          <div class="hidden md:flex items-center gap-1">
             <a
-              *ngFor="let item of navItems(user.role)"
+              *ngFor="let item of items; trackBy: trackByLink"
               [routerLink]="item.link"
               routerLinkActive="bg-brand-50 text-brand-700"
               [routerLinkActiveOptions]="{ exact: !!item.exact }"
@@ -20,15 +20,15 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-3" *ngIf="user$ | async as user">
+        <div class="flex items-center gap-3" *ngIf="user as u">
           <div class="hidden sm:flex flex-col items-end leading-tight">
-            <span class="text-sm font-semibold text-slate-800">{{ user.nombre }}</span>
-            <span class="text-xs text-slate-500">{{ roleLabel[user.role] }}</span>
+            <span class="text-sm font-semibold text-slate-800">{{ u.nombre }}</span>
+            <span class="text-xs text-slate-500">{{ roleLabel[u.role] }}</span>
           </div>
           <span
             class="inline-flex h-9 w-9 items-center justify-center rounded-full text-white text-sm font-semibold"
-            [style.background-color]="user.color || '#db2777'"
-            >{{ iniciales(user.nombre) }}</span
+            [style.background-color]="u.color || '#db2777'"
+            >{{ iniciales(u.nombre) }}</span
           >
           <button
             (click)="logout()"
@@ -40,9 +40,9 @@
         </div>
       </div>
 
-      <div class="md:hidden flex items-center gap-1 pb-3 overflow-x-auto" *ngIf="user$ | async as user">
+      <div class="md:hidden flex items-center gap-1 pb-3 overflow-x-auto">
         <a
-          *ngFor="let item of navItems(user.role)"
+          *ngFor="let item of items; trackBy: trackByLink"
           [routerLink]="item.link"
           routerLinkActive="bg-brand-50 text-brand-700"
           [routerLinkActiveOptions]="{ exact: !!item.exact }"

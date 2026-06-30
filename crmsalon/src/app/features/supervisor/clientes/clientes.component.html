@@ -66,7 +66,7 @@
           </div>
           <p class="text-sm text-slate-600">Estilista: <span class="font-medium">{{ a.estilista?.nombre }}</span></p>
           <p *ngIf="a.notas" class="text-sm text-slate-500 mt-1 italic">“{{ a.notas }}”</p>
-          <p class="text-sm text-slate-700 mt-2 font-semibold">Total: ${{ a.total }}</p>
+          <p class="text-sm text-slate-700 mt-2 font-semibold">Total: Q{{ a.total }}</p>
         </div>
         <ng-template #sinActual>
           <div class="rounded-xl bg-slate-50 border border-dashed border-slate-200 p-5 text-center text-sm text-slate-400">

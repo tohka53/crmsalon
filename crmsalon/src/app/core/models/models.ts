@@ -32,7 +32,7 @@ export interface Servicio {
   id: ServicioId;
   nombre: string;
   icono: string; // emoji
-  precio: number; // MXN
+  precio: number; // GTQ (Quetzales)
   duracion: number; // minutos
 }
 
